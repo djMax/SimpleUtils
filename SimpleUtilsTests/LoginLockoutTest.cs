@@ -19,7 +19,7 @@ namespace SimpleUtilsTests
 			DateTime fiveMinutesAgo = now.Subtract(TimeSpan.FromMinutes(5));
 			lc.CurrentTime = fiveMinutesAgo;
 			Assert.IsTrue (lc.CanAttemptLogin);
-			lc.loginFailed ();
+			lc.LoginFailed ();
 			Assert.IsTrue (lc.CanAttemptLogin);
 			Assert.Greater (lc.GetValue ().Length, 0);
 			Assert.AreEqual (lc.ToAdjustedTime (fiveMinutesAgo).ToString(), lc.GetValue ());
@@ -28,7 +28,7 @@ namespace SimpleUtilsTests
 				DateTime minutesAgo = now.Add(TimeSpan.FromMinutes(i));
 				lc.CurrentTime = minutesAgo;
 				Assert.IsTrue (lc.CanAttemptLogin);
-				lc.loginFailed ();
+				lc.LoginFailed ();
 			}
 
 			Assert.IsFalse (lc.CanAttemptLogin);
@@ -42,7 +42,7 @@ namespace SimpleUtilsTests
 
 			// Ok, now let's make sure old logins don't count against you.
 			lc = new LoginLockoutCalculator (lc.GetValue (), now.Add (TimeSpan.FromMinutes (32)));
-			lc.loginFailed ();
+			lc.LoginFailed ();
 			Assert.IsTrue (lc.CanAttemptLogin);
 		}
 	}

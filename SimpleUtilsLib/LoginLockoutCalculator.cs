@@ -3,6 +3,25 @@ using System.Collections.Generic;
 
 namespace SimpleUtilsLib
 {
+	/// <summary>
+	/// Sliding window login lockout calculator.
+	/// </summary>
+	/// <example>
+	/// 	var lc = new LoginLockoutCalculator(stringFromTheDbColumn);
+	///     if (lc.CanAttemptLogin) {
+	///       /* attempt login */
+	///       if (wasLoginOk) {
+	///         lc.LoginSucceeded();
+	///       } else {
+	///         lc.LoginFailed();
+	///       }
+	///       /* write the new value back to the database */
+	///       user.SaveLockoutColumn(lc.GetValue());
+	///       /* Process login result as normal */
+	///     } else {
+	///       /* deny the login attempt with some message. */
+	///     }
+	/// </example>
 	public class LoginLockoutCalculator
 	{
 		private static DateTime baseTime = new DateTime(2014,10,1,0,0,0,DateTimeKind.Utc);
@@ -30,7 +49,7 @@ namespace SimpleUtilsLib
 				foreach (var t in new List<String> (existingValue.Split (','))) {
 					// Add the value in the list to the base date as an offset in seconds
 					// only if it's in our window
-					DateTime attemptDate = baseTime.Add (new TimeSpan (0, 0, int.Parse (t)));
+					var attemptDate = baseTime.Add (new TimeSpan (0, 0, int.Parse (t)));
 					if (CurrentTime.Subtract (attemptDate).TotalMinutes < LockoutPeriodMinutes) {
 						timestamps.Add (attemptDate);
 					}
@@ -50,11 +69,11 @@ namespace SimpleUtilsLib
 			}
 		}
 	
-		public void loginFailed() {
+		public void LoginFailed() {
 			timestamps.Add (CurrentTime);
 		}
 
-		public void loginSucceeded() {
+		public void LoginSucceeded() {
 			timestamps.Clear ();
 		}
 
