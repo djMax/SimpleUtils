@@ -16,22 +16,29 @@ namespace SimpleUtilsTests
 			Assert.AreSame ("", lc.GetValue ());
 			Assert.IsTrue (lc.CanAttemptLogin);
 
-			DateTime tenMinutesAgo = now.Subtract(TimeSpan.FromMinutes(-10));
-			lc.CurrentTime = tenMinutesAgo;
+			DateTime fiveMinutesAgo = now.Subtract(TimeSpan.FromMinutes(5));
+			lc.CurrentTime = fiveMinutesAgo;
 			Assert.IsTrue (lc.CanAttemptLogin);
 			lc.loginFailed ();
 			Assert.IsTrue (lc.CanAttemptLogin);
 			Assert.Greater (lc.GetValue ().Length, 0);
-			Assert.AreEqual (lc.ToAdjustedTime (tenMinutesAgo).ToString(), lc.GetValue ());
+			Assert.AreEqual (lc.ToAdjustedTime (fiveMinutesAgo).ToString(), lc.GetValue ());
 
-			for (var i = -9; i < -6; i--) {
-				DateTime minutesAgo = now.Subtract(TimeSpan.FromMinutes(i));
+			for (var i = -4; i < 0; i++) {
+				DateTime minutesAgo = now.Add(TimeSpan.FromMinutes(i));
 				lc.CurrentTime = minutesAgo;
 				Assert.IsTrue (lc.CanAttemptLogin);
 				lc.loginFailed ();
 			}
 
 			Assert.IsFalse (lc.CanAttemptLogin);
+			lc.CurrentTime = now;
+			// 10 minutes is still in the penalty box
+			Assert.IsFalse (lc.CanAttemptLogin);
+
+			// After the 30 minutes is up, you can go in again.
+			lc.CurrentTime = now.Add (TimeSpan.FromMinutes (31));
+			Assert.IsTrue (lc.CanAttemptLogin);
 		}
 	}
 }

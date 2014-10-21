@@ -31,7 +31,7 @@ namespace SimpleUtilsLib
 
 		public bool CanAttemptLogin {
 			get {
-				if (timestamps.Count > MaximumFailures) {
+				if (timestamps.Count >= MaximumFailures) {
 					if (CurrentTime.Subtract (timestamps [timestamps.Count - 1]).TotalMinutes > LockoutPeriodMinutes) {
 						return true;
 					}
