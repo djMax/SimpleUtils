@@ -14,15 +14,24 @@ namespace SimpleUtilsLib
 
 		public DateTime CurrentTime { get; set; }
 
-		public LoginLockoutCalculator(String existingValue) {
-			CurrentTime = DateTime.UtcNow;
+		/// <summary>
+		/// The event time argument is mostly for unit testing, you should 
+		/// typically use the default (i.e. don't pass eventTime).
+		/// </summary>
+		/// <param name="existingValue">Existing value.</param>
+		/// <param name="eventTime">Event time.</param>
+		public LoginLockoutCalculator(String existingValue, DateTime? eventTime = null) {
+			if (!eventTime.HasValue) {
+				eventTime = DateTime.UtcNow;
+			}
+			CurrentTime = eventTime.Value;
 			timestamps = new List<DateTime> ();
 			if (existingValue != null) {
 				foreach (var t in new List<String> (existingValue.Split (','))) {
 					// Add the value in the list to the base date as an offset in seconds
 					// only if it's in our window
 					DateTime attemptDate = baseTime.Add (new TimeSpan (0, 0, int.Parse (t)));
-					if (CurrentTime.Subtract (attemptDate).TotalMinutes < AttemptWindowMinutes+LockoutPeriodMinutes) {
+					if (CurrentTime.Subtract (attemptDate).TotalMinutes < LockoutPeriodMinutes) {
 						timestamps.Add (attemptDate);
 					}
 				}

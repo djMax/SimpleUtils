@@ -39,6 +39,11 @@ namespace SimpleUtilsTests
 			// After the 30 minutes is up, you can go in again.
 			lc.CurrentTime = now.Add (TimeSpan.FromMinutes (31));
 			Assert.IsTrue (lc.CanAttemptLogin);
+
+			// Ok, now let's make sure old logins don't count against you.
+			lc = new LoginLockoutCalculator (lc.GetValue (), now.Add (TimeSpan.FromMinutes (32)));
+			lc.loginFailed ();
+			Assert.IsTrue (lc.CanAttemptLogin);
 		}
 	}
 }
